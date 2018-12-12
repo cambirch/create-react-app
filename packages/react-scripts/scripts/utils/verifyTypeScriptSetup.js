@@ -22,7 +22,9 @@ function writeJson(fileName, object) {
 }
 
 function verifyNoTypeScript() {
-  const typescriptFiles = globby(['**/*.(ts|tsx)', '!**/node_modules'], { cwd: paths.appSrc });
+  const typescriptFiles = globby(['**/*.(ts|tsx)', '!**/node_modules'], {
+    cwd: paths.appSrc,
+  });
   if (typescriptFiles.length > 0) {
     console.warn(
       chalk.yellow(
@@ -100,6 +102,8 @@ function verifyTypeScriptSetup() {
     allowSyntheticDefaultImports: { suggested: true },
     strict: { suggested: true },
     forceConsistentCasingInFileNames: { suggested: true },
+    isolatedModules: { suggested: false },
+    experimentalDecorators: { suggested: true },
 
     // These values are required and cannot be changed by the user
     // Keep this in sync with the webpack config
@@ -114,7 +118,6 @@ function verifyTypeScriptSetup() {
       reason: 'to match webpack resolution',
     },
     resolveJsonModule: { value: true, reason: 'to match webpack loader' },
-    isolatedModules: { value: true, reason: 'implementation limitation' },
     noEmit: { value: true },
     jsx: {
       parsedValue: ts.JsxEmit.Preserve,
@@ -123,10 +126,7 @@ function verifyTypeScriptSetup() {
     },
     // We do not support absolute imports, though this may come as a future
     // enhancement
-    baseUrl: {
-      value: undefined,
-      reason: 'absolute imports are not supported (yet)',
-    },
+    baseUrl: { value: 'src' },
     paths: { value: undefined, reason: 'aliased imports are not supported' },
   };
 
@@ -252,7 +252,7 @@ function verifyTypeScriptSetup() {
   if (!fs.existsSync(paths.appTypeDeclarations)) {
     fs.writeFileSync(
       paths.appTypeDeclarations,
-      `/// <reference types="react-scripts" />${os.EOL}`
+      `/// <reference types="@tigre/react-scripts" />${os.EOL}`
     );
   }
 }

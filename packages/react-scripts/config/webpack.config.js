@@ -86,10 +86,20 @@ module.exports = function(webpackEnv) {
           shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined
         ),
       },
-      {
-        loader: require.resolve('css-loader'),
-        options: cssOptions,
-      },
+      // Add typing generation the "typings-for-css-modules-loader" is a full replacement for the css-loader module
+      useTypeScript && cssOptions.modules
+        ? {
+            loader: require.resolve('typings-for-css-modules-loader'),
+            options: {
+              ...cssOptions,
+              camelCase: 'dashes',
+              namedExport: true,
+            },
+          } // When not a module just use the normal css-loader
+        : {
+            loader: require.resolve('css-loader'),
+            options: cssOptions,
+          },
       {
         // Options for PostCSS as we reference these options twice
         // Adds vendor prefixing based on your specified browser support in
@@ -258,7 +268,7 @@ module.exports = function(webpackEnv) {
       // We placed these paths second because we want `node_modules` to "win"
       // if there are any conflicts. This matches Node resolution mechanism.
       // https://github.com/facebook/create-react-app/issues/253
-      modules: ['node_modules'].concat(
+      modules: ['node_modules', 'src'].concat(
         // It is guaranteed to exist because we tweak it in `env.js`
         process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
       ),
@@ -632,7 +642,7 @@ module.exports = function(webpackEnv) {
             module: 'esnext',
             moduleResolution: 'node',
             resolveJsonModule: true,
-            isolatedModules: true,
+            isolatedModules: false, // Makes for nicer TypeScript importing/exporting
             noEmit: true,
             jsx: 'preserve',
           },
