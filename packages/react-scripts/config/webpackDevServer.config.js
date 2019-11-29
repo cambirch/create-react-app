@@ -79,6 +79,9 @@ module.exports = function(proxy, allowedHost) {
     watchOptions: {
       ignored: ignoredFiles(paths.appSrc),
     },
+    writeToDisk: filePath => {
+      return filePath.includes('server');
+    },
     // Enable HTTPS if the HTTPS environment variable is set to 'true'
     https: protocol === 'https',
     host,
